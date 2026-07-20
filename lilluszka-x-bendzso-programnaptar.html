@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lilluszka x Bendzső programnaptár</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FFF7F0;
+    --pink:#FFB7C5;
+    --pink-deep:#F5729B;
+    --lilac:#C9B6F5;
+    --mint:#BDECD8;
+    --butter:#FFE3A9;
+    --ink:#5B4358;
+    --white:#FFFFFF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Quicksand',sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  /* floating background hearts */
+  .bg-hearts{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+  .bg-hearts span{
+    position:absolute;
+    font-size:22px;
+    opacity:.18;
+    animation:floaty 14s linear infinite;
+  }
+  @keyframes floaty{
+    0%{transform:translateY(105vh) rotate(0deg);}
+    100%{transform:translateY(-10vh) rotate(30deg);}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .bg-hearts span{animation:none;display:none;}
+    *{transition:none!important;animation:none!important;}
+  }
+
+  .wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:40px 20px 90px;}
+
+  header{text-align:center;margin-bottom:38px;}
+  .badge{
+    display:inline-block;
+    background:var(--white);
+    border:2px dashed var(--pink);
+    border-radius:999px;
+    padding:6px 18px;
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--pink-deep);
+    margin-bottom:16px;
+  }
+  h1{
+    font-family:'Baloo 2',cursive;
+    font-weight:800;
+    font-size:clamp(34px,6vw,56px);
+    line-height:1.1;
+    background:linear-gradient(90deg,var(--pink-deep),#A47CF3 60%,#5FBF97);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  header p{margin-top:12px;font-size:17px;font-weight:500;color:#8a6f86;}
+
+  h2{
+    font-family:'Baloo 2',cursive;
+    font-weight:700;
+    font-size:22px;
+    margin-bottom:14px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .step-dot{
+    background:var(--pink);
+    color:var(--white);
+    width:30px;height:30px;
+    border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;
+    font-size:15px;
+    flex-shrink:0;
+  }
+
+  .card-panel{
+    background:var(--white);
+    border-radius:26px;
+    padding:26px 24px;
+    box-shadow:0 8px 30px rgba(245,114,155,.10);
+    margin-bottom:26px;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+    gap:14px;
+  }
+  .activity{
+    position:relative;
+    background:var(--cream);
+    border:2.5px solid transparent;
+    border-radius:20px;
+    padding:20px 12px 16px;
+    text-align:center;
+    cursor:pointer;
+    transition:transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+    user-select:none;
+  }
+  .activity:hover{transform:translateY(-4px) rotate(-1deg);box-shadow:0 8px 18px rgba(91,67,88,.10);}
+  .activity:focus-visible{outline:3px solid var(--lilac);outline-offset:3px;}
+  .activity .emoji{font-size:34px;display:block;margin-bottom:8px;}
+  .activity .name{font-weight:700;font-size:14.5px;line-height:1.25;}
+  .activity .heart{
+    position:absolute;top:-10px;right:-6px;
+    font-size:22px;
+    opacity:0;
+    transform:scale(.3) rotate(-20deg);
+    transition:all .25s cubic-bezier(.68,-0.55,.27,1.55);
+  }
+  .activity.selected{
+    border-color:var(--pink-deep);
+    background:#FFEDF2;
+    animation:wiggle .4s ease;
+  }
+  .activity.selected .heart{opacity:1;transform:scale(1) rotate(0deg);}
+  @keyframes wiggle{
+    0%,100%{transform:rotate(0);}
+    25%{transform:rotate(-3deg);}
+    75%{transform:rotate(3deg);}
+  }
+
+  .datetime{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  @media(max-width:520px){.datetime{grid-template-columns:1fr;}}
+  label{font-weight:700;font-size:14px;display:block;margin-bottom:6px;}
+  input[type=date],input[type=time],textarea{
+    width:100%;
+    font-family:'Quicksand',sans-serif;
+    font-weight:600;
+    font-size:16px;
+    color:var(--ink);
+    border:2.5px solid var(--lilac);
+    border-radius:16px;
+    padding:12px 14px;
+    background:var(--cream);
+    transition:border-color .18s;
+  }
+  input:focus,textarea:focus{outline:none;border-color:var(--pink-deep);background:var(--white);}
+  textarea{resize:vertical;min-height:74px;margin-top:14px;}
+
+  .cta-row{text-align:center;}
+  .cta{
+    font-family:'Baloo 2',cursive;
+    font-weight:700;
+    font-size:20px;
+    color:var(--white);
+    background:linear-gradient(135deg,var(--pink-deep),#A47CF3);
+    border:none;
+    border-radius:999px;
+    padding:16px 46px;
+    cursor:pointer;
+    box-shadow:0 10px 24px rgba(245,114,155,.35);
+    transition:transform .18s, box-shadow .18s;
+  }
+  .cta:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 14px 30px rgba(245,114,155,.45);}
+  .cta:active{transform:scale(.97);}
+  .cta:focus-visible{outline:3px solid var(--mint);outline-offset:3px;}
+  .hint{margin-top:10px;font-size:14px;color:#a58aa0;font-weight:500;min-height:20px;}
+
+  /* success overlay */
+  .overlay{
+    position:fixed;inset:0;
+    background:rgba(91,67,88,.45);
+    backdrop-filter:blur(3px);
+    display:none;
+    align-items:center;justify-content:center;
+    z-index:50;
+    padding:20px;
+  }
+  .overlay.show{display:flex;}
+  .success{
+    background:var(--white);
+    border-radius:30px;
+    max-width:430px;
+    width:100%;
+    text-align:center;
+    padding:40px 30px 34px;
+    box-shadow:0 20px 60px rgba(0,0,0,.2);
+    animation:popIn .4s cubic-bezier(.68,-0.55,.27,1.35);
+    position:relative;
+  }
+  @keyframes popIn{from{transform:scale(.6);opacity:0;}to{transform:scale(1);opacity:1;}}
+  .success .big{font-size:56px;margin-bottom:10px;display:block;animation:bounce 1.2s ease infinite;}
+  @keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+  .success h3{
+    font-family:'Baloo 2',cursive;
+    font-weight:800;
+    font-size:28px;
+    color:var(--pink-deep);
+    margin-bottom:10px;
+  }
+  .success p{font-weight:600;font-size:16px;line-height:1.5;color:#7a5f76;}
+  .success .picked{
+    margin:16px 0;
+    display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
+  }
+  .success .picked span{
+    background:var(--cream);
+    border:2px solid var(--pink);
+    border-radius:999px;
+    padding:5px 13px;
+    font-size:13.5px;
+    font-weight:700;
+  }
+  .close-btn{
+    margin-top:20px;
+    font-family:'Baloo 2',cursive;
+    font-weight:700;
+    font-size:16px;
+    background:var(--mint);
+    color:var(--ink);
+    border:none;border-radius:999px;
+    padding:11px 30px;
+    cursor:pointer;
+    transition:transform .15s;
+  }
+  .close-btn:hover{transform:scale(1.05);}
+
+  footer{text-align:center;margin-top:30px;font-size:14px;font-weight:600;color:#b697ae;}
+</style>
+</head>
+<body>
+
+<div class="bg-hearts" aria-hidden="true"></div>
+
+<div class="wrap">
+  <header>
+    <div class="badge">💌 kettőnk kis naptára</div>
+    <h1>Lilluszka x Bendzső<br>programnaptár</h1>
+    <p>Válaszd ki, mihez lenne kedved – akár többet is! 🥰</p>
+  </header>
+
+  <section class="card-panel">
+    <h2><span class="step-dot">1</span> Mit csináljunk? ✨</h2>
+    <div class="grid" id="grid">
+      <div class="activity" role="button" tabindex="0" data-name="Buborék Csopak">
+        <span class="heart">💖</span>
+        <span class="emoji">🫧</span>
+        <span class="name">Buborék Csopak</span>
+      </div>
+      <div class="activity" role="button" tabindex="0" data-name="Tiramisu sütés">
+        <span class="heart">💖</span>
+        <span class="emoji">🍰</span>
+        <span class="name">Tiramisu sütés</span>
+      </div>
+      <div class="activity" role="button" tabindex="0" data-name="Fagyizás">
+        <span class="heart">💖</span>
+        <span class="emoji">🍦</span>
+        <span class="name">Fagyizás</span>
+      </div>
+      <div class="activity" role="button" tabindex="0" data-name="Gintonicozás">
+        <span class="heart">💖</span>
+        <span class="emoji">🍸</span>
+        <span class="name">Gintonicozás</span>
+      </div>
+      <div class="activity" role="button" tabindex="0" data-name="Desh koncert">
+        <span class="heart">💖</span>
+        <span class="emoji">🎤</span>
+        <span class="name">Desh koncert</span>
+      </div>
+      <div class="activity" role="button" tabindex="0" data-name="Postapalota">
+        <span class="heart">💖</span>
+        <span class="emoji">🌇</span>
+        <span class="name">Postapalota</span>
+      </div>
+      <div class="activity" role="button" tabindex="0" data-name="Közös edzés">
+        <span class="heart">💖</span>
+        <span class="emoji">💪</span>
+        <span class="name">Közös edzés</span>
+      </div>
+      <div class="activity" role="button" tabindex="0" data-name="Filmezés">
+        <span class="heart">💖</span>
+        <span class="emoji">🎬</span>
+        <span class="name">Filmezés</span>
+      </div>
+      <div class="activity" role="button" tabindex="0" data-name="Közös zenélés">
+        <span class="heart">💖</span>
+        <span class="emoji">🎶</span>
+        <span class="name">Közös zenélés</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="card-panel">
+    <h2><span class="step-dot">2</span> Mikor? 📅</h2>
+    <div class="datetime">
+      <div>
+        <label for="date">Dátum</label>
+        <input type="date" id="date">
+      </div>
+      <div>
+        <label for="time">Időpont</label>
+        <input type="time" id="time">
+      </div>
+    </div>
+    <textarea id="note" placeholder="Üzenet Bendzsónak... (nem kötelező) 💬"></textarea>
+  </section>
+
+  <div class="cta-row">
+    <button class="cta" id="bookBtn">Időpont foglalása 💘</button>
+    <div class="hint" id="hint"></div>
+  </div>
+
+  <footer>Készült sok-sok szeretettel 💕</footer>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="success" role="dialog" aria-modal="true" aria-labelledby="successTitle">
+    <span class="big">🎉</span>
+    <h3 id="successTitle">Időpont lefoglalva!</h3>
+    <div class="picked" id="pickedList"></div>
+    <p id="whenText"></p>
+    <p style="margin-top:12px;">Vedd fel a kapcsolatot <strong>Bendzsóval</strong>! 📞💌</p>
+    <button class="close-btn" id="closeBtn">Rendben 💗</button>
+  </div>
+</div>
+
+<script>
+  // floating hearts background
+  const heartsBox = document.querySelector('.bg-hearts');
+  const symbols = ['💗','🌸','✨','💖','🫶','🌷'];
+  for(let i=0;i<18;i++){
+    const s = document.createElement('span');
+    s.textContent = symbols[i % symbols.length];
+    s.style.left = Math.random()*100 + 'vw';
+    s.style.animationDuration = (10 + Math.random()*12) + 's';
+    s.style.animationDelay = (-Math.random()*14) + 's';
+    s.style.fontSize = (16 + Math.random()*18) + 'px';
+    heartsBox.appendChild(s);
+  }
+
+  // activity selection
+  const activities = document.querySelectorAll('.activity');
+  activities.forEach(a=>{
+    const toggle = ()=> a.classList.toggle('selected');
+    a.addEventListener('click', toggle);
+    a.addEventListener('keydown', e=>{
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); }
+    });
+  });
+
+  // booking
+  const bookBtn = document.getElementById('bookBtn');
+  const hint = document.getElementById('hint');
+  const overlay = document.getElementById('overlay');
+  const pickedList = document.getElementById('pickedList');
+  const whenText = document.getElementById('whenText');
+
+  bookBtn.addEventListener('click', ()=>{
+    const selected = [...document.querySelectorAll('.activity.selected')].map(a=>a.dataset.name);
+    if(selected.length === 0){
+      hint.textContent = 'Válassz legalább egy programot! 🥺';
+      return;
+    }
+    hint.textContent = '';
+
+    pickedList.innerHTML = selected.map(n=>'<span>'+n+'</span>').join('');
+
+    const d = document.getElementById('date').value;
+    const t = document.getElementById('time').value;
+    let when = '';
+    if(d){
+      const dt = new Date(d + 'T00:00');
+      when = dt.toLocaleDateString('hu-HU',{year:'numeric',month:'long',day:'numeric'});
+    }
+    if(t){ when += (when ? ', ' : '') + t; }
+    whenText.textContent = when ? '📅 ' + when : '';
+
+    overlay.classList.add('show');
+    confetti();
+  });
+
+  document.getElementById('closeBtn').addEventListener('click', ()=> overlay.classList.remove('show'));
+  overlay.addEventListener('click', e=>{ if(e.target === overlay) overlay.classList.remove('show'); });
+
+  // tiny confetti
+  function confetti(){
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const colors = ['#F5729B','#C9B6F5','#BDECD8','#FFE3A9','#FFB7C5'];
+    for(let i=0;i<40;i++){
+      const c = document.createElement('div');
+      c.style.cssText = 'position:fixed;z-index:60;width:10px;height:10px;border-radius:'+(Math.random()>.5?'50%':'2px')+
+        ';background:'+colors[i%colors.length]+
+        ';left:'+(45+Math.random()*10)+'vw;top:45vh;pointer-events:none;';
+      document.body.appendChild(c);
+      const angle = Math.random()*Math.PI*2;
+      const dist = 120 + Math.random()*220;
+      c.animate([
+        {transform:'translate(0,0) rotate(0deg)',opacity:1},
+        {transform:'translate('+Math.cos(angle)*dist+'px,'+(Math.sin(angle)*dist+180)+'px) rotate('+(Math.random()*720-360)+'deg)',opacity:0}
+      ],{duration:1200+Math.random()*600,easing:'cubic-bezier(.2,.7,.3,1)'}).onfinish = ()=> c.remove();
+    }
+  }
+</script>
+</body>
+</html>
